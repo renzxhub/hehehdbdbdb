@@ -1,0 +1,234 @@
+--====RenzHub====--
+local player = game:GetService("Players").LocalPlayer
+local tweenService = game:GetService("TweenService")
+
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local currentTrack = nil
+local emoteActive = false
+
+player.CharacterAdded:Connect(function(newChar)
+    character = newChar
+    humanoid = character:WaitForChild("Humanoid")
+end)
+
+local animSettings = {
+    FadeIn = 0.1,
+    FadeOut = 0.1,
+    Weight = 1,
+    Speed = 1,
+    TimePosition = 0
+}
+
+local function loadEmote(id)
+    if currentTrack then
+        pcall(function() currentTrack:Stop(0) end)
+        currentTrack = nil
+    end
+    local anim = Instance.new("Animation")
+    anim.AnimationId = "rbxassetid://" .. tostring(id)
+    local track = humanoid:LoadAnimation(anim)
+    track.Priority = Enum.AnimationPriority.Action4
+    local weight = animSettings.Weight
+    if weight == 0 then weight = 0.001 end
+    track:Play(animSettings.FadeIn, weight, animSettings.Speed)
+    track.TimePosition = math.clamp(animSettings.TimePosition, 0, 1) * track.Length
+    currentTrack = track
+end
+
+local function stopEmote()
+    if currentTrack then
+        pcall(function() currentTrack:Stop(animSettings.FadeOut) end)
+        currentTrack = nil
+    end
+end
+
+
+local args = { { 100839513065432 } }
+local replicatedStorage = game:GetService("ReplicatedStorage")
+local remotes = replicatedStorage:WaitForChild("Remotes")
+local changeChar = remotes:WaitForChild("ChangeCharacterBody")
+pcall(function() changeChar:InvokeServer(unpack(args)) end)
+
+
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "RenzHub"
+Gui.Parent = player:WaitForChild("PlayerGui")
+
+local Main = Instance.new("Frame", Gui)
+Main.Size = UDim2.new(0, 280, 0, 150)  
+Main.Position = UDim2.new(0.5, -140, 0.5, -75)
+Main.BackgroundColor3 = Color3.fromRGB(150, 30, 30)
+Main.BorderSizePixel = 0
+Main.Active = true
+Main.Draggable = true
+
+
+local RedGrad = Instance.new("UIGradient", Main)
+RedGrad.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 50, 50)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 100, 100)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 30, 30))
+})
+
+
+local Corner = Instance.new("UICorner", Main)
+Corner.CornerRadius = UDim.new(0, 12)
+
+
+local Stroke = Instance.new("UIStroke", Main)
+Stroke.Color = Color3.fromRGB(255, 100, 100)
+Stroke.Thickness = 2
+Stroke.Transparency = 0.3
+
+
+local Shine = Instance.new("ImageLabel", Main)
+Shine.Size = UDim2.new(2, 0, 1, 0)
+Shine.Position = UDim2.new(-1, 0, 0, 0)
+Shine.BackgroundTransparency = 1
+Shine.Image = "rbxassetid://1316042816"
+Shine.ImageColor3 = Color3.fromRGB(255, 255, 255)
+Shine.ImageTransparency = 0.6
+local shineTween = tweenService:Create(Shine, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, true), {Position = UDim2.new(1, 0, 0, 0)})
+shineTween:Play()
+
+
+local TitleBar = Instance.new("Frame", Main)
+TitleBar.Size = UDim2.new(1, 0, 0, 35)
+TitleBar.BackgroundTransparency = 1
+
+local Title = Instance.new("TextLabel", TitleBar)
+Title.Size = UDim2.new(1, -40, 1, 0)
+Title.Position = UDim2.new(0, 10, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "RENZHUB "
+Title.TextColor3 = Color3.fromRGB(255, 200, 200)
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.TextSize = 20
+Title.Font = Enum.Font.GothamBold
+Title.TextStrokeTransparency = 0.5
+Title.TextStrokeColor3 = Color3.fromRGB(100, 0, 0)
+
+
+local MinBtn = Instance.new("TextButton", TitleBar)
+MinBtn.Size = UDim2.new(0, 28, 0, 28)
+MinBtn.Position = UDim2.new(1, -35, 0, 3)
+MinBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+MinBtn.Text = "—’"
+MinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinBtn.TextSize = 22
+MinBtn.Font = Enum.Font.GothamBold
+MinBtn.BorderSizePixel = 0
+local minCorner = Instance.new("UICorner", MinBtn)
+minCorner.CornerRadius = UDim.new(1, 0)
+
+
+local Content = Instance.new("Frame", Main)
+Content.Size = UDim2.new(1, 0, 1, -35)
+Content.Position = UDim2.new(0, 0, 0, 35)
+Content.BackgroundTransparency = 1
+
+
+local EmoteSection = Instance.new("Frame", Content)
+EmoteSection.Size = UDim2.new(1, -20, 0, 90)
+EmoteSection.Position = UDim2.new(0, 10, 0, 10)
+EmoteSection.BackgroundColor3 = Color3.fromRGB(100, 20, 20)
+EmoteSection.BackgroundTransparency = 0.4
+local emoteCorner = Instance.new("UICorner", EmoteSection)
+emoteCorner.CornerRadius = UDim.new(0, 8)
+
+local EmoteLabel = Instance.new("TextLabel", EmoteSection)
+EmoteLabel.Size = UDim2.new(1, 0, 0, 25)
+EmoteLabel.Position = UDim2.new(0, 0, 0, 5)
+EmoteLabel.BackgroundTransparency = 1
+EmoteLabel.Text = "SKYBOX/SKYDECTOYER"
+EmoteLabel.TextColor3 = Color3.fromRGB(255, 200, 200)
+EmoteLabel.TextSize = 14
+EmoteLabel.Font = Enum.Font.GothamBold
+
+local EmoteToggle = Instance.new("TextButton", EmoteSection)
+EmoteToggle.Size = UDim2.new(0, 160, 0, 35)
+EmoteToggle.Position = UDim2.new(0.5, -80, 0, 35)
+EmoteToggle.BackgroundColor3 = Color3.fromRGB(220, 40, 40)
+EmoteToggle.Text = "SKYBOX: OFF"
+EmoteToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+EmoteToggle.TextSize = 16
+EmoteToggle.Font = Enum.Font.GothamBold
+local emoteBtnCorner = Instance.new("UICorner", EmoteToggle)
+emoteBtnCorner.CornerRadius = UDim.new(0, 8)
+
+local EmoteStatus = Instance.new("TextLabel", EmoteSection)
+EmoteStatus.Size = UDim2.new(1, 0, 0, 20)
+EmoteStatus.Position = UDim2.new(0, 0, 0, 70)
+EmoteStatus.BackgroundTransparency = 1
+EmoteStatus.Text = "Status: Stopped"
+EmoteStatus.TextColor3 = Color3.fromRGB(200, 150, 150)
+EmoteStatus.TextSize = 12
+EmoteStatus.Font = Enum.Font.Gotham
+
+
+EmoteToggle.MouseButton1Click:Connect(function()
+    if not emoteActive then
+        local success, err = pcall(function()
+            loadEmote(70883871260184)
+        end)
+        if success then
+            emoteActive = true
+            EmoteToggle.Text = "SKYBOX: ON"
+            EmoteToggle.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+            EmoteStatus.Text = "Status: Playing"
+            EmoteStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
+        else
+            EmoteStatus.Text = "Error: " .. tostring(err)
+            EmoteStatus.TextColor3 = Color3.fromRGB(255, 0, 0)
+            task.wait(2)
+            EmoteStatus.Text = "Status: Stopped"
+            EmoteStatus.TextColor3 = Color3.fromRGB(200, 150, 150)
+        end
+    else
+        pcall(stopEmote)
+        emoteActive = false
+        EmoteToggle.Text = "SKYBOX: OFF"
+        EmoteToggle.BackgroundColor3 = Color3.fromRGB(220, 40, 40)
+        EmoteStatus.Text = "Status: Stopped"
+        EmoteStatus.TextColor3 = Color3.fromRGB(200, 150, 150)
+    end
+end)
+
+
+local dragEnabled = false
+local dragStart, startPos
+
+TitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragEnabled = true
+        dragStart = input.Position
+        startPos = Main.Position
+    end
+end)
+
+TitleBar.InputEnded:Connect(function()
+    dragEnabled = false
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragEnabled and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+
+local minimized = false
+MinBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        Content.Visible = false
+        Main.Size = UDim2.new(0, 280, 0, 40)
+        MinBtn.Text = "+"
+    else
+        Content.Visible = true
+        Main.Size = UDim2.new(0, 280, 0, 150)
+        MinBtn.Text = "—"
+    end
+end)
